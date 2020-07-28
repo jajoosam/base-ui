@@ -1,0 +1,25 @@
+{
+  "name": "base-ui",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start -p 80",
+    "deploy": "openode deploy"
+  },
+  "dependencies": {
+    "@emotion/core": "^10.0.28",
+    "@emotion/styled": "^10.0.27",
+    "axios": "^0.19.2",
+    "deta": "^0.0.7",
+    "emotion": "^10.0.27",
+    "immer": "^7.0.7",
+    "next": "9.4.4",
+    "react": "16.13.1",
+    "react-device-detect": "^1.13.1",
+    "react-dom": "16.13.1",
+    "uniqid": "^5.2.0",
+    "use-immer": "^0.4.1"
+  }
+}
