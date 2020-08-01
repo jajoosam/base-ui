@@ -5,12 +5,15 @@ import Input from "./Input";
 const SideBar = ({
   secret,
   collection,
+  limit,
   onSecretChange,
   onCollectionChange,
+  onLimitChange,
   changes,
   onSync,
-  syncButtonState,
+  buttonState,
 }) => {
+  console.log(collection);
   return (
     <div
       style={{
@@ -30,6 +33,13 @@ const SideBar = ({
           label="📁 collection"
           placeholder="applications-1"
         />
+        <Input
+          onChange={onLimitChange}
+          value={limit}
+          label="🔢 limit"
+          type="number"
+          placeholder="No. of rows per page"
+        />
         <br />
         <strong
           className={css`
@@ -45,9 +55,9 @@ const SideBar = ({
           className={css`
             margin: 1em;
           `}
-          disabled={changes.length === 0 || syncButtonState.disabled}
+          disabled={changes.length === 0 || buttonState.disabled}
         >
-          {syncButtonState.text}
+          {buttonState.text}
         </button>
       </div>
     </div>

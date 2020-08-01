@@ -14,7 +14,7 @@ const QueryBar = ({ onChange, onFetch, value, buttonState }) => (
         value={value}
         onChange={onChange}
         style={{ marginBottom: 0, fontFamily: "monospace", width: "100%" }}
-        placeholder="Enter a query here, or leave it empty"
+        placeholder="Enter a query here, or leave it empty to fetch everything"
       />
     </div>
     &nbsp;&nbsp;
