@@ -1,5 +1,6 @@
-import { useMemo } from "react";
-
+import { useMemo, useState, useEffect } from "react";
+import Modal from "./Editor"
+import JSON5 from "json5"
 const Grid = ({ data, dispatch, changes, onAppend }) => {
   const columns = useMemo(
     () =>
@@ -8,6 +9,7 @@ const Grid = ({ data, dispatch, changes, onAppend }) => {
         for (let i = 0; i < data.length; i++) {
           if (data[i][key]) {
             type = typeof data[i][key];
+            if(type==="object" && Array.isArray(data[i][key])) type = "array" 
             break;
           }
         }
@@ -15,6 +17,27 @@ const Grid = ({ data, dispatch, changes, onAppend }) => {
       }),
     [data]
   );
+
+  const [toEdit, setToEdit] = useState(undefined);
+  const [isOpen, setIsOpen] = useState(false);
+
+  const startEdit = (i, key) => {
+    setToEdit({index: i, key});
+  };
+
+  const onEdit = (code) => {
+    dispatch({
+      type: "set",
+      index: toEdit.index,
+      key: toEdit.key,
+      new: JSON5.parse(code)
+    });
+  }
+
+  useEffect(()=>{
+    toEdit && setIsOpen(true)
+  }, [toEdit]);
+
 
   if (data.length === 0) {
     return (
@@ -26,6 +49,11 @@ const Grid = ({ data, dispatch, changes, onAppend }) => {
 
   return (
     <main>
+    {
+     toEdit &&
+      <Modal {...{isOpen, setIsOpen, content: JSON5.stringify(data[toEdit.index][toEdit.key], null, 2), onEdit}}/>
+    }
+      
       <table>
         <thead>
           <tr>
@@ -47,30 +75,34 @@ const Grid = ({ data, dispatch, changes, onAppend }) => {
                   if (typeof value === "number") type = "number";
                   if (typeof value === "boolean") type = "checkbox";
                   if (typeof value === "object") type = "object";
+                  if (Array.isArray(value)) type = "array";
                   return (
                     <td className={`type-${type}`}>
-                      {type === "object" ? (
-                        "Unsupported!"
+                    {console.log(type)}
+                      {type === "object" || type === "array" ? (
+                        <button onClick={() => startEdit(i, key.name)}>
+                          {type}
+                        </button>
                       ) : (
-                        <input
-                          className="in-table"
-                          {...{ type, value }}
-                          onChange={(e) => {
-                            dispatch({
-                              type: "set",
-                              index: i,
-                              key: key.name,
-                              new:
-                                type === "number"
-                                  ? parseFloat(e.target.value)
-                                  : type === "checkbox"
-                                  ? e.target.checked
-                                  : e.target.value,
-                            });
-                          }}
-                          checked={value}
-                        />
-                      )}
+                          <input
+                            className="in-table"
+                            {...{ type, value }}
+                            onChange={(e) => {
+                              dispatch({
+                                type: "set",
+                                index: i,
+                                key: key.name,
+                                new:
+                                  type === "number"
+                                    ? parseFloat(e.target.value)
+                                    : type === "checkbox"
+                                      ? e.target.checked
+                                      : e.target.value,
+                              });
+                            }}
+                            checked={value}
+                          />
+                        )}
                       {type === "checkbox" && (
                         <span>
                           &nbsp;&nbsp;&nbsp;{value ? "True" : "False"}

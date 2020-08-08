@@ -5,7 +5,7 @@ export const dataDispatcher = (payload, action) => {
     payload.mut[action.index][action.key] = action.new;
     if (
       payload.immut[action.index] &&
-      action.new === payload.immut[action.index][action.key]
+      JSON.stringify(action.new) === JSON.stringify(payload.immut[action.index][action.key])
     ) {
       payload.changes = payload.changes.filter(
         (index) => index != action.index

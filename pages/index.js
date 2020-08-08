@@ -7,9 +7,9 @@ import Meta from "../components/Meta";
 import axios from "axios";
 import { css } from "emotion";
 import { useState, useEffect } from "react";
-import { useImmerReducer } from "use-immer";
+import { useImmer, useImmerReducer } from "use-immer";
 
-import { dataDispatcher } from "../state/data";
+import { dataDispatcher } from "../utils/dataDispatcher";
 import { isMobile } from "react-device-detect";
 
 const Page = () => {
@@ -26,8 +26,8 @@ const Page = () => {
     changes: [],
   });
 
-  // Sidebar State
-  let [sidebarState, setSidebarState] = useState({
+  // Sidebar States
+  let [sidebarState, setSidebarState] = useImmer({
     collection: undefined,
     secret: undefined,
     limit: 20,
@@ -38,7 +38,7 @@ const Page = () => {
   });
 
   // Querybar State
-  let [querybarState, setQuerybarState] = useState({
+  let [querybarState, setQuerybarState] = useImmer({
     query: undefined,
     buttonState: {
       text: "Fetch",
@@ -68,25 +68,24 @@ const Page = () => {
 
   useEffect(() => {
     localStorage.collection
-      ? setSidebarState({
-          ...sidebarState,
-          collection: localStorage.collection,
+      ? setSidebarState((e) => {
+          e.collection = localStorage.collection;
         })
       : console.log("waaa");
     localStorage.secret
-      ? setSidebarState({
-          ...sidebarState,
-          secret: localStorage.secret,
+      ? setSidebarState((e) => {
+          e.secret = localStorage.secret;
         })
       : null;
     localStorage.limit
-      ? setSidebarState({
-          ...sidebarState,
-          limit: localStorage.limit,
+      ? setSidebarState((e) => {
+          e.limit = localStorage.limit;
         })
       : null;
     localStorage.query
-      ? setQuerybarState({ ...querybarState, query: localStorage.query })
+      ? setQuerybarState((e) => {
+          e.query = localStorage.query;
+        })
       : null;
   }, []);
 
@@ -109,31 +108,35 @@ const Page = () => {
             changes: data.changes,
           }}
           onSecretChange={(e) => {
-            setSidebarState({ ...sidebarState, secret: e.target.value });
-            localStorage.secret = e.target.value;
+            const val = e.target.value;
+            setSidebarState((d) => {
+              d.secret = val;
+            });
+            localStorage.secret = val;
           }}
           onCollectionChange={(e) => {
-            setSidebarState({ ...sidebarState, collection: e.target.value });
-            localStorage.collection = e.target.value;
+            const val = e.target.value;
+
+            setSidebarState((d) => {
+              d.collection = val;
+            });
+            localStorage.collection = val;
           }}
           onLimitChange={(e) => {
-            setSidebarState({
-              ...sidebarState,
-              limit: parseInt(e.target.value),
+            const val = e.target.value;
+            setSidebarState((d) => {
+              d.limit = parseInt(val);
             });
-            localStorage.limit = e.target.value;
+            localStorage.limit = parseInt(val);
           }}
           onSync={(e) => {
-            setSidebarState({
-              ...sidebarState,
-              buttonState: { text: "🔄 Syncing...", disabled: true },
+            setSidebarState((d) => {
+              d.buttonState = { text: "🔄 Syncing...", disabled: true };
             });
-
             syncData().then(() => {
               fetchData().then(() =>
-                setSidebarState({
-                  ...sidebarState,
-                  buttonState: { text: "🔄 Syncing...", disabled: true },
+                setSidebarState((d) => {
+                  d.buttonState = { text: "Sync", disabled: false };
                 })
               );
             });
@@ -152,18 +155,20 @@ const Page = () => {
             buttonState: querybarState.buttonState,
           }}
           onChange={(e) => {
-            setQuerybarState({ ...querybarState, query: e.target.value });
-            localStorage.query = e.target.value;
+            const val = e.target.value;
+
+            setQuerybarState((d) => {
+              d.query = val;
+            });
+            localStorage.query = val;
           }}
           onFetch={async (e) => {
-            setQuerybarState({
-              ...querybarState,
-              buttonState: { text: "Fetching", disabled: true },
+            setQuerybarState((d) => {
+              d.buttonState = { text: "Fetching...", disabled: true };
             });
             fetchData().then(() => {
-              setQuerybarState({
-                ...querybarState,
-                buttonState: { text: "Fetch", disabled: false },
+              setQuerybarState((d) => {
+                d.buttonState = { text: "Fetch", disabled: false };
               });
             });
           }}
