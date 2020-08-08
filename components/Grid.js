@@ -7,9 +7,10 @@ const Grid = ({ data, dispatch, changes, onAppend }) => {
       [...new Set(data.map((e) => Object.keys(e)).flat())].map((key) => {
         let type = undefined;
         for (let i = 0; i < data.length; i++) {
-          if (data[i][key]) {
+          if (data[i].hasOwnProperty(key)) {
             type = typeof data[i][key];
-            if(type==="object" && Array.isArray(data[i][key])) type = "array" 
+            if(type==="object" && Array.isArray(data[i][key])) type = "array";
+            console.log(type) 
             break;
           }
         }
