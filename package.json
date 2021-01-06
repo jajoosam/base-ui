@@ -11,7 +11,7 @@
   "dependencies": {
     "@emotion/core": "^10.0.28",
     "@emotion/styled": "^10.0.27",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "deta": "^0.0.7",
     "emotion": "^10.0.27",
     "hjson": "^3.2.1",
